@@ -60,6 +60,10 @@ public class GraphTest {
 		Path p10 = new Path(a,d,g,j);
 		
 		Assert.assertThat(paths, containsInAnyOrder(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10));
+		
+		System.out.println("All paths from Vertex a:");
+		paths.stream().forEach(System.out::println);
+		System.out.println("\n");
 	}
 	
 	@Test
@@ -71,6 +75,10 @@ public class GraphTest {
 		Assert.assertEquals(1, paths.size());
 		Path p1 = new Path(b);
 		Assert.assertThat(paths, containsInAnyOrder(p1));
+		
+		System.out.println("All paths from Vertex b:");
+		paths.stream().forEach(System.out::println);
+		System.out.println("\n");
 	}
 	
 	@Test
@@ -88,6 +96,10 @@ public class GraphTest {
 		Path p2 = new Path(f,i);
 		
 		Assert.assertThat(paths, containsInAnyOrder(p1,p2));
+		
+		System.out.println("All paths from Vertex f:");
+		paths.stream().forEach(System.out::println);
+		System.out.println("\n");
 	}
 	
 	@Test
@@ -97,6 +109,10 @@ public class GraphTest {
 		Vertex g = graph.getVertex("g");
 		Collection<Path> paths = graph.getAllPaths(g);
 		Assert.assertEquals(1, paths.size());
+		
+		System.out.println("All paths from Vertex g:");
+		paths.stream().forEach(System.out::println);
+		System.out.println("\n");
 	}
 	
 	@Test
