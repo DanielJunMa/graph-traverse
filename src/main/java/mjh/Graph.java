@@ -52,24 +52,37 @@ public class Graph {
 				.get();
 	}
 	
+	
+	/**
+	 * Get all vertices that are reachable from a given origin
+	 * @param origin
+	 * @return Collection of ReachableVertex wrapper objects that contains the Vertex and the distance
+	 */
 	public Collection<ReachableVertex> getReachableVertices(Vertex origin) {
 		return  getReachableVertices(origin,0);
 	}
-	
-	private Collection<ReachableVertex> getReachableVertices(Vertex vertex, int distanceTraveled) {
-		int distance = distanceTraveled + 1;
-		List<ReachableVertex> reachable = vertex.getVertices()
-				.stream()
-				.map(v -> new ReachableVertex(v,distance))
-				.collect(Collectors.toList());
 		
-		// recursively call getReachableVertices for each child
-		List<ReachableVertex> decendents = reachable.stream()
-				.flatMap(rv -> getReachableVertices(rv.getVertex(),distance).stream())
-				.collect(Collectors.toList());
+	/**
+	 * Private recursive implementation used with getReachableVertices(). Not intended for public API
+	 * @param vertex
+	 * @param distance
+	 * @return
+	 */
+	private Collection<ReachableVertex> getReachableVertices(Vertex vertex, int distance) {
+		Collection<ReachableVertex> reachable = new HashSet<ReachableVertex>();
+		if(distance != 0) {
+			// The first time vertex == origin and it must not be added
+			reachable.add(new ReachableVertex(vertex,distance));
+		}
 		
-
-		reachable.addAll(decendents);
+		if(vertex.getVertices().size() > 0) {
+			// recursively call getReachableVertices for each child
+			List<ReachableVertex> decendents = vertex.getVertices().stream()
+					.flatMap(v -> getReachableVertices(v,distance + 1).stream())
+					.collect(Collectors.toList());
+			reachable.addAll(decendents);
+		}
+		
 		return reachable;
 	}
 	

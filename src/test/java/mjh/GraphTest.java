@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 public class GraphTest {
 
@@ -29,13 +30,55 @@ public class GraphTest {
 	}
 	
 	@Test
-	public void getReachableVertices() {
+	public void getReachableVerticesfromA() {
 		Graph graph = GraphTest.createTestGraph();
 		
-		// Verify can get a given vertex
-		Vertex c = graph.getVertex("c");
-		Collection<ReachableVertex> reachable = graph.getReachableVertices(c);
-		System.out.println("Reachable:"+reachable);
+		Vertex a = graph.getVertex("a");
+		Collection<ReachableVertex> reachable = graph.getReachableVertices(a);
+		Assert.assertEquals(16, reachable.size());
+		
+		Assert.assertThat(reachable, containsInAnyOrder(
+				new ReachableVertex(graph.getVertex("b"),1),
+				new ReachableVertex(graph.getVertex("c"),1),
+				new ReachableVertex(graph.getVertex("c"),2),
+				new ReachableVertex(graph.getVertex("d"),1),
+				new ReachableVertex(graph.getVertex("e"),2),
+				new ReachableVertex(graph.getVertex("e"),3),
+				new ReachableVertex(graph.getVertex("f"),2),
+				new ReachableVertex(graph.getVertex("f"),3),
+				new ReachableVertex(graph.getVertex("g"),2),
+				new ReachableVertex(graph.getVertex("h"),3),
+				new ReachableVertex(graph.getVertex("h"),4),
+				new ReachableVertex(graph.getVertex("i"),3),
+				new ReachableVertex(graph.getVertex("i"),4),
+				new ReachableVertex(graph.getVertex("j"),3),
+				new ReachableVertex(graph.getVertex("k"),4),
+				new ReachableVertex(graph.getVertex("k"),5)
+				));
+	}
+	
+	@Test
+	public void getReachableVerticesfromF() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex f = graph.getVertex("f");
+		Collection<ReachableVertex> reachable = graph.getReachableVertices(f);
+		Assert.assertEquals(3, reachable.size());
+		
+		Assert.assertThat(reachable, containsInAnyOrder(
+				new ReachableVertex(graph.getVertex("h"),1),
+				new ReachableVertex(graph.getVertex("i"),1),
+				new ReachableVertex(graph.getVertex("k"),2)
+				));
+	}
+	
+	@Test
+	public void getReachableVerticesfromB() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex b = graph.getVertex("b");
+		Collection<ReachableVertex> reachable = graph.getReachableVertices(b);
+		Assert.assertEquals(0, reachable.size());
 	}
 	
 	
@@ -63,7 +106,9 @@ public class GraphTest {
 		graph.addEdge(a,d);
 		graph.addEdge(c,e);
 		graph.addEdge(c,f);
+		graph.addEdge(d,c);
 		graph.addEdge(d,f);
+		graph.addEdge(d,g);
 		graph.addEdge(f,h);
 		graph.addEdge(f,i);
 		graph.addEdge(g,j);
