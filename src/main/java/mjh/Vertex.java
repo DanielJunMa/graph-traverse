@@ -3,6 +3,10 @@ package mjh;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * Vertex within a graph. Contains edge references to other Vertices.  
+ *
+ */
 public class Vertex {
 	private String id;
 	private Collection<Vertex> vertices = new HashSet<Vertex>();

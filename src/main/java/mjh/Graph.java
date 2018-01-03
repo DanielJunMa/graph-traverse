@@ -1,13 +1,16 @@
 package mjh;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
- * A collection of Vertices that make up a graph.
+ * A collection of Vertices that make up a graph. 
+ * As well as operations to find all paths from given starting point,
+ * or just the longest path from a given starting point.
  */
 public class Graph {
 	Collection<Vertex> vertices = new HashSet<Vertex>();
@@ -52,39 +55,54 @@ public class Graph {
 				.get();
 	}
 	
-	
 	/**
-	 * Get all vertices that are reachable from a given origin
+	 * Find the longest path from a given starting Vertex.
 	 * @param origin
-	 * @return Collection of ReachableVertex wrapper objects that contains the Vertex and the distance
-	 */
-	public Collection<ReachableVertex> getReachableVertices(Vertex origin) {
-		return  getReachableVertices(origin,0);
-	}
-		
-	/**
-	 * Private recursive implementation used with getReachableVertices(). Not intended for public API
-	 * @param vertex
-	 * @param distance
 	 * @return
 	 */
-	private Collection<ReachableVertex> getReachableVertices(Vertex vertex, int distance) {
-		Collection<ReachableVertex> reachable = new HashSet<ReachableVertex>();
-		if(distance != 0) {
-			// The first time vertex == origin and it must not be added
-			reachable.add(new ReachableVertex(vertex,distance));
-		}
+	public Path getLongestPath(Vertex origin) {
+		Collection<Path> allPaths = getAllPaths(origin);
 		
-		if(vertex.getVertices().size() > 0) {
-			// recursively call getReachableVertices for each child
-			List<ReachableVertex> decendents = vertex.getVertices().stream()
-					.flatMap(v -> getReachableVertices(v,distance + 1).stream())
-					.collect(Collectors.toList());
-			reachable.addAll(decendents);
-		}
-		
-		return reachable;
+		// reverse sort the list of paths by path length, and return the first one.
+		return allPaths.stream()
+				.sorted(Comparator.comparing(Path::getLength).reversed())
+				.findFirst()
+				.get();
 	}
+	
+		
+	/**
+	 * Get all terminal paths from any given origin in the graph
+	 * @param origin
+	 * @return
+	 */
+	public Collection<Path> getAllPaths(Vertex origin){
+		return getPaths(origin, new Path(origin));
+	}
+	
+	/**
+	 * Private recursive implementation used with getAllPaths(). Not intended for public API.
+	 * This does a depth first traverse to find all paths from the starting vertex.
+	 * @param vertex
+	 * @param currentPath
+	 * @return
+	 */
+	private Collection<Path> getPaths(Vertex vertex, Path currentPath){
+		Collection<Path> paths = new HashSet<Path>();
+		if(vertex.getVertices().size() == 0) {
+			// if no children then this is the end of this path
+			paths.add(currentPath);
+		}else {
+			// there are children, so recursively explore each.
+			List<Path> additionalPaths = vertex.getVertices().stream()
+					.flatMap(v -> getPaths(v, new Path(currentPath,v)).stream())
+					.collect(Collectors.toList());
+			paths.addAll(additionalPaths);
+		}
+		return paths;
+	}
+	
+	
 	
 	
 

@@ -30,62 +30,132 @@ public class GraphTest {
 	}
 	
 	@Test
-	public void getReachableVerticesfromA() {
+	public void getPathsFromA() {
 		Graph graph = GraphTest.createTestGraph();
 		
 		Vertex a = graph.getVertex("a");
-		Collection<ReachableVertex> reachable = graph.getReachableVertices(a);
-		Assert.assertEquals(16, reachable.size());
+		Collection<Path> paths = graph.getAllPaths(a);
+		Assert.assertEquals(10, paths.size());
 		
-		Assert.assertThat(reachable, containsInAnyOrder(
-				new ReachableVertex(graph.getVertex("b"),1),
-				new ReachableVertex(graph.getVertex("c"),1),
-				new ReachableVertex(graph.getVertex("c"),2),
-				new ReachableVertex(graph.getVertex("d"),1),
-				new ReachableVertex(graph.getVertex("e"),2),
-				new ReachableVertex(graph.getVertex("e"),3),
-				new ReachableVertex(graph.getVertex("f"),2),
-				new ReachableVertex(graph.getVertex("f"),3),
-				new ReachableVertex(graph.getVertex("g"),2),
-				new ReachableVertex(graph.getVertex("h"),3),
-				new ReachableVertex(graph.getVertex("h"),4),
-				new ReachableVertex(graph.getVertex("i"),3),
-				new ReachableVertex(graph.getVertex("i"),4),
-				new ReachableVertex(graph.getVertex("j"),3),
-				new ReachableVertex(graph.getVertex("k"),4),
-				new ReachableVertex(graph.getVertex("k"),5)
-				));
-	}
-	
-	@Test
-	public void getReachableVerticesfromF() {
-		Graph graph = GraphTest.createTestGraph();
-		
+		Vertex b = graph.getVertex("b");
+		Vertex c = graph.getVertex("c");
+		Vertex d = graph.getVertex("d");
+		Vertex e = graph.getVertex("e");
 		Vertex f = graph.getVertex("f");
-		Collection<ReachableVertex> reachable = graph.getReachableVertices(f);
-		Assert.assertEquals(3, reachable.size());
+		Vertex g = graph.getVertex("g");
+		Vertex h = graph.getVertex("h");
+		Vertex i = graph.getVertex("i");
+		Vertex j = graph.getVertex("j");
+		Vertex k = graph.getVertex("k");
 		
-		Assert.assertThat(reachable, containsInAnyOrder(
-				new ReachableVertex(graph.getVertex("h"),1),
-				new ReachableVertex(graph.getVertex("i"),1),
-				new ReachableVertex(graph.getVertex("k"),2)
-				));
+		Path p1 = new Path(a,b);
+		Path p2 = new Path(a,c,e);
+		Path p3 = new Path(a,c,f,h,k);
+		Path p4 = new Path(a,c,f,i);
+		Path p5 = new Path(a,d,c,e);
+		Path p6 = new Path(a,d,c,f,h,k);
+		Path p7 = new Path(a,d,c,f,i);
+		Path p8 = new Path(a,d,f,h,k);
+		Path p9 = new Path(a,d,f,i);
+		Path p10 = new Path(a,d,g,j);
+		
+		Assert.assertThat(paths, containsInAnyOrder(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10));
 	}
 	
 	@Test
-	public void getReachableVerticesfromB() {
+	public void getPathsFromB() {
 		Graph graph = GraphTest.createTestGraph();
 		
 		Vertex b = graph.getVertex("b");
-		Collection<ReachableVertex> reachable = graph.getReachableVertices(b);
-		Assert.assertEquals(0, reachable.size());
+		Collection<Path> paths = graph.getAllPaths(b);
+		Assert.assertEquals(1, paths.size());
+		Path p1 = new Path(b);
+		Assert.assertThat(paths, containsInAnyOrder(p1));
 	}
 	
+	@Test
+	public void getPathsFromF() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex f = graph.getVertex("f");
+		Collection<Path> paths = graph.getAllPaths(f);
+		Assert.assertEquals(2, paths.size());
+		
+		Vertex h = graph.getVertex("h");
+		Vertex i = graph.getVertex("i");
+		Vertex k = graph.getVertex("k");
+		Path p1 = new Path(f,h,k);
+		Path p2 = new Path(f,i);
+		
+		Assert.assertThat(paths, containsInAnyOrder(p1,p2));
+	}
 	
+	@Test
+	public void getPathsfromG() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex g = graph.getVertex("g");
+		Collection<Path> paths = graph.getAllPaths(g);
+		Assert.assertEquals(1, paths.size());
+	}
+	
+	@Test
+	public void getLongestPathfromA() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex a = graph.getVertex("a");
+		Path longestPath = graph.getLongestPath(a);
+		Assert.assertEquals(5, longestPath.getLength());
+		 
+		Vertex c = graph.getVertex("c");
+		Vertex d = graph.getVertex("d");
+		Vertex f = graph.getVertex("f");
+		Vertex h = graph.getVertex("h");
+		Vertex k = graph.getVertex("k");
+		Path expected = new Path(a,d,c,f,h,k);
+		
+		Assert.assertEquals(expected, longestPath);
+	}
+	
+	@Test
+	public void getLongestPathfromB() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex b = graph.getVertex("b");
+		Path longestPath = graph.getLongestPath(b);
+		Assert.assertEquals(0, longestPath.getLength());
+	}
+	
+	@Test
+	public void getLongestPathfromF() {
+		Graph graph = GraphTest.createTestGraph();
+		
+		Vertex f = graph.getVertex("f");
+		Path longestPath = graph.getLongestPath(f);
+		Assert.assertEquals(2, longestPath.getLength());
+		 
+		Vertex h = graph.getVertex("h");
+		Vertex k = graph.getVertex("k");
+		Path expected = new Path(f,h,k);
+		
+		Assert.assertEquals(expected, longestPath);
+	}
+		
 	
 	/**
-	 * Utility method to create test data
-	 * @return
+	 * Utility method to create test graph
+	 * 
+	 *               a
+	 *             / | \
+	 *            b  c<-d
+	 *            	/ \/ \
+	 *             e   f  g
+	 *                /\   \
+	 *               h  i   j
+	 *               |
+	 *               k
+	 *            
+	 * @return Graph
 	 */
 	private static Graph createTestGraph() {
 		Graph graph = new Graph();
